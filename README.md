@@ -1,24 +1,40 @@
-# redpandas-prep
+# redpandas-ml
 
-![PyPI - Version](https://img.shields.io/pypi/v/redpandas-prep)
-![Python Version](https://img.shields.io/pypi/pyversions/redpandas-prep)
+![PyPI - Version](https://img.shields.io/pypi/v/redpandas-ml)
+![Python Version](https://img.shields.io/pypi/pyversions/redpandas-ml)
 
 Enterprise-grade ML data-preparation pipeline with integrated visual health reporting.
 
 ## Installation
 
 ```bash
-# Core only
-pip install redpandas-prep
-
-# With visualization support (recommended)
-pip install "redpandas-prep[viz]"
-
-# With all optional dependencies (seaborn, scipy, scikit-learn)
-pip install "redpandas-prep[all]"
+pip install redpandas-ml
 ```
 
-**Note:** The package name on PyPI is `redpandas-prep`, but you import it as `redpandas` using the alias `rp`:
+### 💡 Global vs. Virtual Environments (Recommendation)
+
+When installing `redpandas-ml`, it automatically installs heavy data science libraries like `pandas`, `numpy`, `matplotlib`, and `scikit-learn`. 
+
+**Option A: Virtual Environment (Standard Practice)**
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Or .venv\Scripts\activate on Windows
+pip install redpandas-ml
+```
+* **Pros:** Keeps your project isolated. The heavy libraries won't conflict with other projects on your computer.
+* **Cons:** You have to activate the environment every time you want to run your code.
+
+**Option B: Global Installation (Beginner Friendly)**
+```bash
+# Just run this in a normal terminal without activating any environment
+pip install redpandas-ml
+```
+* **Pros:** You can open any random folder, write `import redpandas as rp`, and it works instantly. No setup required! 
+* **Cons:** The dependencies are installed system-wide.
+
+**Our Recommendation:** If you are just starting out or want to use `redpandas-ml` as a quick utility tool across many random CSV files on your computer, **install it globally**. If you are building a production application, use a **virtual environment**.
+
+**Note:** The package name on PyPI is `redpandas-ml`, but you import it as `redpandas` using the alias `rp`:
 ```python
 import redpandas as rp
 ```
