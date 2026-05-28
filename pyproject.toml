@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "redpandas-prep"
-version = "0.2.0"
+version = "0.3.0"
 description = "Enterprise-grade ML data-preparation pipeline with integrated visual health reporting"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -19,7 +19,7 @@ dependencies = ["pandas>=1.5", "numpy>=1.23"]
 
 [project.optional-dependencies]
 viz = ["matplotlib>=3.6", "seaborn>=0.12"]
-all = ["matplotlib>=3.6", "seaborn>=0.12", "scipy>=1.10"]
+all = ["matplotlib>=3.6", "seaborn>=0.12", "scipy>=1.10", "scikit-learn>=1.2"]
 
 [project.urls]
 Homepage   = "https://github.com/GadeKuldeep/redPandas"
