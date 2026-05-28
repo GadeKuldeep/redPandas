@@ -9,7 +9,7 @@ description = "Enterprise-grade ML data-preparation pipeline with integrated vis
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "Author", email = "author@example.com" }]
+authors = [{ name = "Kuldeep Gade", email = "your-actual-email@gmail.com" }]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -22,9 +22,9 @@ viz = ["matplotlib>=3.6", "seaborn>=0.12"]
 all = ["matplotlib>=3.6", "seaborn>=0.12", "scipy>=1.10"]
 
 [project.urls]
-Homepage = "https://github.com/author/redpandas"
-Repository = "https://github.com/author/redpandas.git"
-Issues = "https://github.com/author/redpandas/issues"
+Homepage   = "https://github.com/GadeKuldeep/redPandas"
+Repository = "https://github.com/GadeKuldeep/redPandas.git"
+Issues     = "https://github.com/GadeKuldeep/redPandas/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
