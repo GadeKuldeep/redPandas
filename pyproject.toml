@@ -15,11 +15,14 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = ["pandas>=1.5", "numpy>=1.23"]
-
-[project.optional-dependencies]
-viz = ["matplotlib>=3.6", "seaborn>=0.12"]
-all = ["matplotlib>=3.6", "seaborn>=0.12", "scipy>=1.10", "scikit-learn>=1.2"]
+dependencies = [
+    "pandas>=1.5",
+    "numpy>=1.23",
+    "matplotlib>=3.6",
+    "seaborn>=0.12",
+    "scipy>=1.10",
+    "scikit-learn>=1.2"
+]
 
 [project.urls]
 Homepage   = "https://github.com/GadeKuldeep/redPandas"

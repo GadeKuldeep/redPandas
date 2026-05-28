@@ -88,7 +88,7 @@ def plot_correlation(df, method="pearson"):
     _require_mpl()
     import matplotlib.pyplot as plt
     
-    num_cols = df.select_dtypes(include=[np.number]).columns
+    num_cols = _safe_num_cols(df, max_cols=20)
     if len(num_cols) < 2:
         raise ValueError("Need at least 2 numeric columns for correlation plot")
         
@@ -178,7 +178,7 @@ def plot_outliers(df, cols=None):
             continue
             
         color = cmap(i % 8)
-        boxprops = dict(facecolor=color, color='black', patch_artist=True)
+        boxprops = dict(facecolor=color, color='black')
         flierprops = dict(marker='o', markerfacecolor='#e63946', markersize=3, alpha=0.5, linestyle='none')
         
         ax.boxplot(valid_data, vert=False, boxprops=boxprops, flierprops=flierprops, patch_artist=True)
