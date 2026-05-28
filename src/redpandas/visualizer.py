@@ -220,7 +220,7 @@ def plot_class_balance(df, target_column):
     plt.tight_layout()
     return fig
 
-def generate_report(df, logs, initial_shape, *, target_column=None, save_path="redpandas_report.html", open_browser=True):
+def generate_report(df, logs, initial_shape, diagnostics, *, target_column=None, save_path="redpandas_report.html", open_browser=True):
     _require_mpl()
     import matplotlib.pyplot as plt
     
@@ -235,29 +235,38 @@ def generate_report(df, logs, initial_shape, *, target_column=None, save_path="r
         except Exception as e:
             warnings.warn(f"Failed to generate {title} plot: {e}")
             
-    _add_panel("Missing Values", plot_missing, df)
-    _add_panel("Distributions", plot_distributions, df)
-    _add_panel("Outliers", plot_outliers, df)
+    _add_panel("Missing Value Analysis", plot_missing, df)
+    _add_panel("Feature Distribution Analysis", plot_distributions, df)
+    _add_panel("Outlier Summary", plot_outliers, df)
     
     num_cols = df.select_dtypes(include=[np.number]).columns
     if len(num_cols) >= 2:
-        _add_panel("Correlation", plot_correlation, df)
+        _add_panel("Correlation Analysis", plot_correlation, df)
         
     if target_column and target_column in df.columns:
         _add_panel("Class Balance", plot_class_balance, df, target_column)
+        
+    memory_usage = df.memory_usage(deep=True).sum() / (1024 * 1024)
+
+    health_score = diagnostics.get("health_score", 100)
+    health_color = "#2ecc71" if health_score >= 80 else "#f1c40f" if health_score >= 60 else "#e74c3c"
+    
+    issues_html = "<ul>" + "".join(f"<li>{i}</li>" for i in diagnostics.get("issues", [])) + "</ul>" if diagnostics.get("issues") else "<p>No issues detected.</p>"
+    recs_html = "<ul>" + "".join(f"<li>{r}</li>" for r in diagnostics.get("recommendations", [])) + "</ul>" if diagnostics.get("recommendations") else "<p>No recommendations.</p>"
 
     html_template = f"""
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>redpandas Data Health Report</title>
         <style>
-            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f5f6fa; }}
+            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f5f6fa; color: #2c3e50; }}
             .header {{ background-color: #1a1a2e; color: white; padding: 20px; display: flex; align-items: center; justify-content: space-between; }}
             .badge {{ background-color: #e63946; color: white; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9em; }}
             .container {{ padding: 20px; max-width: 1400px; margin: 0 auto; }}
-            .stats-card {{ background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; border: 1px solid #e1e4e8; }}
+            .card {{ background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; border: 1px solid #e1e4e8; }}
             .stats-table {{ width: 100%; border-collapse: collapse; }}
             .stats-table th, .stats-table td {{ padding: 10px; text-align: left; border-bottom: 1px solid #eee; }}
             .stats-table th {{ color: #666; font-weight: 600; width: 40%; }}
@@ -265,7 +274,10 @@ def generate_report(df, logs, initial_shape, *, target_column=None, save_path="r
             .panel {{ background: white; border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }}
             .panel-title {{ font-size: 1.1em; font-weight: 600; margin-top: 0; margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }}
             .panel img {{ width: 100%; height: auto; }}
+            .health-score {{ font-size: 3em; font-weight: bold; color: {health_color}; margin: 10px 0; }}
             .footer {{ text-align: center; padding: 20px; color: #7f8c8d; font-size: 0.9em; margin-top: 40px; }}
+            .flex-row {{ display: flex; gap: 20px; flex-wrap: wrap; }}
+            .flex-col {{ flex: 1; min-width: 300px; }}
         </style>
     </head>
     <body>
@@ -274,18 +286,33 @@ def generate_report(df, logs, initial_shape, *, target_column=None, save_path="r
             <div class="badge">DATA HEALTH REPORT</div>
         </div>
         <div class="container">
-            <div class="stats-card">
-                <h2 style="margin-top:0;">Pipeline Summary</h2>
-                <table class="stats-table">
-                    <tr><th>Initial Shape</th><td>{initial_shape}</td></tr>
-                    <tr><th>Final Shape</th><td>{df.shape}</td></tr>
-                    <tr><th>Duplicates Removed</th><td>{logs.get('duplicates_removed', 0)}</td></tr>
-                    <tr><th>Empty Columns Dropped</th><td>{logs.get('empty_columns_dropped', 0)}</td></tr>
-                    <tr><th>Zero Variance Columns Dropped</th><td>{logs.get('zero_variance_columns_dropped', 0)}</td></tr>
-                    <tr><th>Outliers Removed</th><td>{logs.get('outliers_removed', 0)}</td></tr>
-                    <tr><th>Numeric Imputations</th><td>{logs.get('numeric_imputations', 0)}</td></tr>
-                    <tr><th>Categorical Imputations</th><td>{logs.get('categorical_imputations', 0)}</td></tr>
-                </table>
+            
+            <div class="flex-row">
+                <div class="card flex-col">
+                    <h2 style="margin-top:0;">Data Health Score</h2>
+                    <div class="health-score">{health_score}/100</div>
+                    
+                    <h3>Issues Detected</h3>
+                    {issues_html}
+                    
+                    <h3>Recommendations</h3>
+                    {recs_html}
+                </div>
+                
+                <div class="card flex-col">
+                    <h2 style="margin-top:0;">Dataset Overview</h2>
+                    <table class="stats-table">
+                        <tr><th>Initial Shape</th><td>{initial_shape}</td></tr>
+                        <tr><th>Final Shape</th><td>{df.shape}</td></tr>
+                        <tr><th>Memory Usage</th><td>{memory_usage:.2f} MB</td></tr>
+                        <tr><th>Duplicates Removed</th><td>{logs.get('duplicates_removed', 0)}</td></tr>
+                        <tr><th>Empty Columns Dropped</th><td>{logs.get('empty_columns_dropped', 0)}</td></tr>
+                        <tr><th>Zero Variance Columns Dropped</th><td>{logs.get('zero_variance_columns_dropped', 0)}</td></tr>
+                        <tr><th>Outliers Removed</th><td>{logs.get('outliers_removed', 0)}</td></tr>
+                        <tr><th>Numeric Imputations</th><td>{logs.get('numeric_imputations', 0)}</td></tr>
+                        <tr><th>Categorical Imputations</th><td>{logs.get('categorical_imputations', 0)}</td></tr>
+                    </table>
+                </div>
             </div>
             
             <div class="grid">

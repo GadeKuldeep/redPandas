@@ -1,4 +1,6 @@
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 from .engine import Prep
+from .config import PrepConfig
+from .persistence import load_pipeline
 from . import visualizer
