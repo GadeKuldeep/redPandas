@@ -14,7 +14,7 @@ class Prep:
         self.logger = get_logger()
         
         if isinstance(data, str):
-            self.df = pd.read_csv(data)
+            self.df = self._smart_read_csv(data)
         elif isinstance(data, pd.DataFrame):
             self.df = data.copy()
         else:
@@ -26,6 +26,19 @@ class Prep:
         
         # Diagnostic analysis
         self.diagnostics = diagnose(self.df)
+
+    def _smart_read_csv(self, filepath):
+        """Auto-detect encoding and read CSV without user intervention."""
+        encodings = ["utf-8", "latin-1", "cp1252", "iso-8859-1"]
+        for enc in encodings:
+            try:
+                df = pd.read_csv(filepath, encoding=enc)
+                self.logger.info(f"Loaded '{filepath}' ({enc} encoding) — {df.shape[0]} rows, {df.shape[1]} columns")
+                self.logger.info(f"Columns: {df.columns.tolist()}")
+                return df
+            except (UnicodeDecodeError, UnicodeError):
+                continue
+        raise ValueError(f"Could not read '{filepath}' with any supported encoding: {encodings}")
 
     def _optimize_memory(self):
         for col in self.df.select_dtypes(include=['int', 'int64']).columns:
