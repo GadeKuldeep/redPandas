@@ -164,7 +164,7 @@ def plot_outliers(df, cols=None):
     n_cols = min(n, 3)
     n_rows = (n + n_cols - 1) // n_cols
     
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols * 4, n_rows * 3))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols * 4, n_rows * 1.5))
     fig.suptitle("Outlier Detection (Box-Whisker)", fontsize=14)
     axes = np.atleast_1d(axes).flatten()
     
