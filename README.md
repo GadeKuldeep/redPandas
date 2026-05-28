@@ -16,9 +16,18 @@ pip install redpandas-ml
 When installing `redpandas-ml`, it automatically installs heavy data science libraries like `pandas`, `numpy`, `matplotlib`, and `scikit-learn`. 
 
 **Option A: Virtual Environment (Standard Practice)**
+
+**For Mac and Linux:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install redpandas-ml
+```
+
+**For Windows (Command Prompt & PowerShell):**
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # Or .venv\Scripts\activate on Windows
+.venv\Scripts\activate
 pip install redpandas-ml
 ```
 * **Pros:** Keeps your project isolated. The heavy libraries won't conflict with other projects on your computer.
